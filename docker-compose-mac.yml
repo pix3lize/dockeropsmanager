@@ -1,0 +1,32 @@
+version: "3.5"
+
+services:
+
+  mongo-server1:
+    image: mongo
+    container_name: appsdb
+    command: mongod --bind_ip_all --dbpath /data/db
+    volumes:
+      - mongo1_db:/data/db
+    ports:
+      - 27017:27017
+
+  ubuntu:
+    image: pix3lize/opsmanagerdocker
+    container_name: opsmanager
+    working_dir: /home/mdb
+    volumes:
+      - ./conf-mms.properties:/opt/mongodb/mms/conf/conf-mms.properties
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        sudo /etc/init.d/mongodb-mms start
+        tail -f /dev/null
+    depends_on:
+      - mongo-server1
+    ports:
+      - 8080:8080
+
+
+volumes:
+  mongo1_db:

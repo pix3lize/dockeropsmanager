@@ -1,0 +1,48 @@
+# Use an official Ubuntu as the base image
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update the package list and install any packages you need
+RUN apt-get update && apt-get upgrade -y
+
+RUN apt-get install -y \
+    curl \
+    gnupg \
+    wget \
+    vim \
+    git \
+    netcat \
+    net-tools \
+    sudo \
+    systemctl 
+
+
+# Clean up
+# Add a new user (optional)
+RUN useradd -ms /bin/bash mdb && \
+    echo 'mdb:mdb123' | chpasswd && \
+    adduser mdb sudo
+
+# Copy the entrypoint script into the image
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Make the script executable
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Create a development directory/Users/hendri.tjipto/Downloads/mongodb-mms-8.0.0.500.20240924T1615Z.amd64.deb.
+RUN mkdir installer
+
+# Set the working directory to the development directory
+WORKDIR /home/mdb/installer
+
+# This command keeps the container running
+#CMD ["sh", "-c", "mongod --bind_ip_all & tail -f /dev/null"]
+
+# Set the entrypoint
+#ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Optionally specify a default command
+#CMD ["bash"]
+CMD ["tail", "-f", "/dev/null"]

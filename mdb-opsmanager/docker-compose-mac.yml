@@ -1,0 +1,61 @@
+version: "3.5"
+
+services:
+
+  mongo-server1:
+    image: mongoentnew
+    container_name: appsdb1
+    hostname: appsdb1
+    ports:
+      - 27017:27017
+    environment:
+      DEPLOYMENT: single      
+
+  mongo-server2:
+    image: mongoentnew
+    container_name: appsdb2
+    hostname: appsdb2
+    ports:
+      - 27018:27017
+    environment:
+      DEPLOYMENT: replicaset
+
+  mongo-server3:
+    image: mongoentnew
+    container_name: appsdb3
+    hostname: appsdb3
+    ports:
+      - 27019:27017    
+    environment:
+      DEPLOYMENT: replicaset
+
+  mongo-server4:
+    image: mongoentnew
+    container_name: appsdb4
+    hostname: appsdb4
+    ports:
+      - 27020:27017
+    environment:
+      DEPLOYMENT: replicaset
+
+  ubuntu:
+    image: pix3lize/opsmanagerdocker
+    container_name: opsmanager1
+    hostname: opsmanager1
+    working_dir: /home/mdb
+    
+    volumes:
+      - ./conf-mms.properties:/opt/mongodb/mms/conf/conf-mms.properties
+      - ./init-replica.sh:/home/mdb/init-replica.sh
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        sleep 10
+        chmod +x /home/mdb/init-replica.sh
+        bash /home/mdb/init-replica.sh
+        sudo /etc/init.d/mongodb-mms start
+        tail -f /dev/null
+    depends_on:
+      - mongo-server1
+    ports:
+      - 8080:8080
