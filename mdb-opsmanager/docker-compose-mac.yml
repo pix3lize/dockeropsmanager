@@ -15,10 +15,12 @@ services:
     image: mongoentnew
     container_name: appsdb2
     hostname: appsdb2
+    volumes: 
+      - ./init-replica.sh:/home/init-replica.sh
     ports:
-      - 27018:27017
+      - 27018:27017 
     environment:
-      DEPLOYMENT: replicaset
+      DEPLOYMENT: script
 
   mongo-server3:
     image: mongoentnew
@@ -42,17 +44,13 @@ services:
     image: pix3lize/opsmanagerdocker
     container_name: opsmanager1
     hostname: opsmanager1
-    working_dir: /home/mdb
-    
+    working_dir: /home/mdb    
     volumes:
-      - ./conf-mms.properties:/opt/mongodb/mms/conf/conf-mms.properties
-      - ./init-replica.sh:/home/mdb/init-replica.sh
+      - ./conf-mms.properties:/opt/mongodb/mms/conf/conf-mms.properties      
     entrypoint: ["/bin/bash", "-c"]
     command: 
       - |
         sleep 10
-        chmod +x /home/mdb/init-replica.sh
-        bash /home/mdb/init-replica.sh
         sudo /etc/init.d/mongodb-mms start
         tail -f /dev/null
     depends_on:

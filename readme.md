@@ -34,7 +34,9 @@ sudo systemctl start mongodb-mms-automation-agent.service
 ```
 - MongoDB Agent start the service 
 ```bash
+sudo systemctl stop mongodb-mms-automation-agent.service
+```
+- MongoDB Agent log folder
+```bash
 code /var/log/mongodb-mms-automation
 ```
-
-sudo systemctl stop mongodb-mms-automation-agent.service

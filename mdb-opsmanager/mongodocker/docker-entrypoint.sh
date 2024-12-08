@@ -48,7 +48,7 @@ appStart() {
 
 	echo "Data directories created."
 
-	FLAG_FILE="/data/db/setup_done"
+	FLAG_FILE="/data/setup_done"
 
 	# Check if the flag file exists
 	if [ ! -f "$FLAG_FILE" ]; then
@@ -78,6 +78,10 @@ if [[ "$DEPLOYMENT" == "replicaset" ]]; then
     # Start MongoDB in single mode
     sudo -u mongodb mongod --port 27017 --replSet replicaset --dbpath /data/db --logpath /data/db/mongodb.log --bind_ip_all --fork --auth --keyFile /data/replicakey
     echo "Started MongoDB in replicaset mode."
+elif [[ "$DEPLOYMENT" == "script" ]]; then
+    sudo -u mongodb mongod --port 27017 --replSet replicaset --dbpath /data/db --logpath /data/db/mongodb.log --bind_ip_all --fork --auth --keyFile /data/replicakey
+	sudo -u mongodb ./home/init-replica.sh
+	echo "Started MongoDB in script mode."	
 else
     # Start MongoDB in authenticated mode
     sudo -u mongodb mongod --port 27017 --dbpath /data/db --logpath /data/db/mongodb.log --bind_ip_all --fork --auth
